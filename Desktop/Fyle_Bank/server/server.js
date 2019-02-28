@@ -5,6 +5,8 @@ var {mongoose} =  require('./db/mongoose');
 var {Bank} = require('./models/bank');
 
 var app = express();
+var _ = require('lodash');
+
 const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 
@@ -38,6 +40,8 @@ app.get('/banks' , (req,res) => {
     })
 })
 
+// Api for getting bank_details for bank by IFSC Id 
+
 app.get('/banks/:ifsc' , (req,res) => {
     var ifsc_code =  req.params.ifsc;
     Bank.find({ifsc_code}).then((bank) => {
@@ -49,6 +53,8 @@ app.get('/banks/:ifsc' , (req,res) => {
             return res.status(400).send(e)
     })
 })
+
+// Api for getting bank_details for banks by BankName and City 
 
 app.get('/banks/findNameCity/:name/:city' , (req,res) => {
     var bank_name = req.params.name;
@@ -62,6 +68,23 @@ app.get('/banks/findNameCity/:name/:city' , (req,res) => {
                return res.status(200).send({banks});   
          },(e) => {
                return res.status(400).send(e);
+    })
+})
+
+// API to delete bank !!
+
+app.delete('/banks/delete/:ifsc' , (req,res) => {
+    var ifsc_code = req.params.ifsc;
+
+    Bank.findOneAndRemove({ifsc_code:ifsc_code} , function(err){
+        if(err)
+        {
+            res.status(400).send()
+        }
+        else
+        {
+            res.json({message: 'Details deleted'});
+        }
     })
 })
 
